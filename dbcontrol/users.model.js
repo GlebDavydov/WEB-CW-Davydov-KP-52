@@ -1,13 +1,13 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
 if (!mongoose.connection.readyState){
     mongoose.connect('mongodb://localhost:27017/MAIN_DATABASE');
 }
 
-var Schema = mongoose.Schema;
+let Schema = mongoose.Schema;
 mongoose.Promise = Promise;
 
-var userSchema = new Schema({
+let userSchema = new Schema({
   name: {
     type: String,
     required: true
@@ -47,6 +47,10 @@ var userSchema = new Schema({
   brief:{
     type: String
   }
-});
+},
+{
+  collection: 'users'
+}
+);
 
-module.exports = mongoose.model('User',userSchema);
+module.exports = mongoose.model('User',userSchema, 'users');

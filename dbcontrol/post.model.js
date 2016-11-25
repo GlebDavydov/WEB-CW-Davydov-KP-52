@@ -1,13 +1,13 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
 if (!mongoose.connection.readyState){
     mongoose.connect('mongodb://localhost:27017/MAIN_DATABASE');
 }
 
-var Schema = mongoose.Schema;
+let Schema = mongoose.Schema;
 mongoose.Promise = Promise;
 
-var postSchema = new Schema({
+let postSchema = new Schema({
   user_id:{
     type: Number,
     required: true

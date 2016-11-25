@@ -1,25 +1,27 @@
-var express = require('express');
-var router = express.Router();
-var userModel = require('../dbcontrol/users.model.js');
-var User = userModel.User;
-
+let express = require('express');
+let router = express.Router();
+let users = require('../cook/user.cook.js');
 
 /* GET home page. */
 router.get('/', (req, res, next)=>{
   res.render('index');
 });
 
-router.get('/register', (req, res, next)=>{
+router.get('/register', (req, res)=>{
   res.render('register');
 });
 
-router.get('/login', (req, res, next)=>{
+router.get('/login', (req, res)=>{
   res.render('login');
 });
 
-router.get('/login/:id', (req, res, next)=>{
+router.get('/login/:_id', (req, res)=>{
+  users.findUser(req, res);
+});
 
-  res.render('profile');
+router.post('/register', (req, res)=>{
+  //console.log(req.body);
+  users.registerNewUser(req, res);
 });
 
 module.exports = router;
