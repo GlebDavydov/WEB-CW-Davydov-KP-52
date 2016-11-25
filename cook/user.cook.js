@@ -28,6 +28,9 @@ exports.registerNewUser = (req, res) => {
               res.json({error: 'User with this login/email already exists'});
           }
           else {
+            if(!req.body.email || !req.body.name || !req.body.password || !req.body.password2){
+              return res.json({error: 'You left empty fields.'});
+            }
             if (req.body.password != req.body.password2){
                 return res.json({error: 'Passwords do not match.'});
             }
@@ -41,7 +44,7 @@ exports.registerNewUser = (req, res) => {
             }
               else{
               data.password = undefined;
-              res.json(data);
+              res.redirect("/profile");
             }
           });
         }

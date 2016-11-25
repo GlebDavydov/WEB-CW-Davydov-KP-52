@@ -24,4 +24,8 @@ router.post('/register', (req, res)=>{
   users.registerNewUser(req, res);
 });
 
+router.post('/login', (req, res)=>{
+  
+});
+
 module.exports = router;

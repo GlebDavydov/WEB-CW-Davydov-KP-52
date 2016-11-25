@@ -36,7 +36,7 @@ let userSchema = new Schema({
     default: false
   },
   post_ids:{
-    type: [Number]
+    type: [{type : Schema.Types.ObjectId}]
   },
   place:{
     type: String
