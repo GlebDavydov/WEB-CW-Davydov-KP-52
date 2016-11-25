@@ -1,8 +1,8 @@
-let Users = require('../dbcontrol/users.model.js');
-let crypto = require('crypto');
-let passport = require('passport');
-let fs = require('fs');
-let config = require('../locals.js');
+const Users = require('../dbcontrol/users.model.js');
+const crypto = require('crypto');
+const passport = require('passport');
+const fs = require('fs');
+const config = require('../locals.js');
 
 exports.HashMD5 = function(password, salt){
     return crypto.createHash('md5').update(password + salt).digest("hex");
@@ -12,7 +12,7 @@ exports.findUser = (req, res) => {
   Users.findByID(req.params._id)
     .exec((err, data) => {
         if (err){
-            res.status(500).json(err);
+            res.render('error', {status : 500, message: "Internal server error"});
         }
     res.json(data);
     });
@@ -22,17 +22,17 @@ exports.registerNewUser = (req, res) => {
     Users.findOne({email: req.body.email})
       .exec((err, data) => {
           if (err){
-              res.status(500).json(err);
+              res.render('error', {status : 500, message: "Internal server error"});
           }
           else if (data){
-              res.json({error: 'User with this login/email already exists'});
+              res.render('error', {status : undefined, message: "Username already picked"});
           }
           else {
             if(!req.body.email || !req.body.name || !req.body.password || !req.body.password2){
-              return res.json({error: 'You left empty fields.'});
+              return res.render('error', {status : undefined, message: "You left empty fields"});
             }
             if (req.body.password != req.body.password2){
-                return res.json({error: 'Passwords do not match.'});
+                return res.render('error', {status : undefined, message: "Passwords do not match"});
             }
             data = {'name':req.body.name, 'email':req.body.email,
             'password':exports.HashMD5(req.body.password, config.salt)};
@@ -40,7 +40,7 @@ exports.registerNewUser = (req, res) => {
             //console.log(data);
             users.save((err, data) => {
             if (err){
-              res.status(500).json(err);
+              res.render('error', {status : 500, message: "Internal server error"});
             }
               else{
               data.password = undefined;

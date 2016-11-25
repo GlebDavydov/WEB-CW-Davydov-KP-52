@@ -1,15 +1,18 @@
-let express = require('express');
-let path = require('path');
-let favicon = require('serve-favicon');
-let logger = require('morgan');
-let cookieParser = require('cookie-parser');
-let bodyParser = require('body-parser');
-let busboyBodyParser = require('busboy-body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const busboyBodyParser = require('busboy-body-parser');
 
-let http = require('http');
-let app = express();
-let server = http.createServer(app);
-let routes = require('./routes/api');
+
+
+const http = require('http');
+const app = express();
+const server = http.createServer(app);
+const routes = require('./routes/api');
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,13 +21,15 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /publicl
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-//app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(busboyBodyParser({ limit: '5mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use('/', routes);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
