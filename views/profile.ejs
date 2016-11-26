@@ -13,10 +13,21 @@
 </head>
 
 <body>
+  <% if (!user) { %>
+    <div class = 'container'>
+      <p>
+        401 Forbidden: Not logged in.
+        <br/>
+        <a href = '/index'>Home</a>
+      </p>
+    </div>
+  <% } else { %>
   <div class = 'container'>
     <p>
+      <a href = '/logout'>Logout</a>
     </p>
   </div>
+  <% } %>
   <script src="js/scripts.js"></script>
 
 

@@ -67,8 +67,9 @@ passport.use(new localStrategy((username, password, done) => {
 
 /* GET home page. */
 router.get('/', (req, res, next)=>{
-  res.render('index');
+  res.render('index', {user: req.user});
 });
+
 
 router.get('/register', (req, res)=>{
   res.render('register');
@@ -86,18 +87,19 @@ router.post('/register', (req, res)=>{
 router.post('/login',
 	passport.authenticate('local', { failureRedirect: '/login-error' }),
   (req, res) => {
-    //console.log(req.body);
-    res.redirect('/');
+		console.log('authenticated.');
+		console.log(req.body);
+    res.redirect('/profile');
 });
 
 router.get('/login-error', (req, res) => {
-  console.log(req.body);
   res.render('error', {status : 501, message: "Login error"});
 });
 
 router.get('/profile', (req, res) => {
+	console.log(req.body);
 	if(req.user){
-		res.render('user_profile', {user : req.user});
+		res.render('profile', {user : req.user});
 	} else {res.render('error', {status : 401, message: "Unauthorized"});}
 });
 

@@ -44,7 +44,7 @@ exports.registerNewUser = (req, res) => {
             }
               else{
               data.password = undefined;
-              res.redirect("/profile");
+              res.redirect("/login");
             }
           });
         }
