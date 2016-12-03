@@ -9,7 +9,7 @@ mongoose.Promise = Promise;
 
 let postSchema = new Schema({
   user_id:{
-    type: Number,
+    type : Schema.Types.ObjectId,
     required: true
   },
   advType:{
@@ -22,7 +22,8 @@ let postSchema = new Schema({
   },
   isComplete:{
     type: Boolean,
-    required: true
+    required: true,
+    default: false
   }
 });
 

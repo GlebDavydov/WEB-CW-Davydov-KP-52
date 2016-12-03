@@ -28,7 +28,23 @@
     <a href='/logout'>Logout</a>
     <br/>
   <% } %>
-</p>
 
+  <div class = "container">
+  <% if (adverts) { %>
+    <ul>
+      <% adverts.forEach(function(advert) {%>
+        <% if (!advert.user.name) { %>
+        <% } else { %>
+          <br/><h4>Author:</h4><br/>
+          <%= advert.user.name %>
+          <br/>
+          <%= advert.post.text %>
+          <% } %>
+        <% }); %>
+    </ul>
+  <% } %>
+  </div>
+
+</p>
 </body>
 </html>

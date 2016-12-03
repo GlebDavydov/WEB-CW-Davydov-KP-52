@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const userFuncs = require('../cook/user.cook.js');
+//const advertboard = require('../cook/post.cook.js');
 const users = require('../dbcontrol/users.model.js');
+const posts = require('../dbcontrol/post.model.js');
 const bodyParser = require('body-parser');
 const busboyBodyParser = require('busboy-body-parser');
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+
 
 const config = require('../locals.js');
 
@@ -67,8 +70,36 @@ passport.use(new localStrategy((username, password, done) => {
 
 /* GET home page. */
 router.get('/', (req, res, next)=>{
-  res.render('index', {user: req.user});
+	let adverts = [];
+	posts
+		.find({})
+		.exec((err, posts)=>{
+			if(!err){
+				posts.forEach((post) => {
+					users
+						.findOne({_id: post.user_id})
+						.exec((err, user)=>{
+							if(!err){
+								console.log("found an advert");
+								adverts[adverts.length] = {post : post, user : user};
+								//console.log(adverts);
+							} else {
+								console.log(err);
+								res.render('err', {status: 501, message: err});
+							}
+						})
+						.then(()=>{
+							console.log(adverts);
+							res.render('index', {user: req.user, adverts: adverts});
+						});
+				});
+			} else {
+				console.log(err);
+				res.render('err', {status: 501, message: err});
+			}
+		});
 });
+
 
 
 router.get('/register', (req, res)=>{

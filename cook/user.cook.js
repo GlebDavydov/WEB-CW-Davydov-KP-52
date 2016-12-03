@@ -1,7 +1,6 @@
 const Users = require('../dbcontrol/users.model.js');
 const crypto = require('crypto');
 const passport = require('passport');
-const fs = require('fs');
 const config = require('../locals.js');
 
 exports.HashMD5 = function(password, salt){
