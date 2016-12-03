@@ -25,23 +25,23 @@
   <br />
   <% } else { %>
     <br/>
+    <a href='/profile'>Profile</a>
+    <br/>
     <a href='/logout'>Logout</a>
     <br/>
   <% } %>
 
   <div class = "container">
-  <% if (adverts) { %>
+  <% if (adverts.length > 0) { %>
     <ul>
       <% adverts.forEach(function(advert) {%>
-        <% if (!advert.user.name) { %>
-        <% } else { %>
-          <br/><h4>Author:</h4><br/>
-          <%= advert.user.name %>
-          <br/>
-          <%= advert.post.text %>
-          <% } %>
-        <% }); %>
+        <br/><h4>Author:</h4>
+        <%= advert.user.name %>
+        <br/>
+        <%= advert.post.text %>
+      <% }); %>
     </ul>
+  <%#todo else href create advert%>
   <% } %>
   </div>
 

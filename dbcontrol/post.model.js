@@ -25,6 +25,9 @@ let postSchema = new Schema({
     required: true,
     default: false
   }
+},
+{
+  collection : 'posts'
 });
 
 module.exports = mongoose.model('Post', postSchema);

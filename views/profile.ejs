@@ -22,8 +22,21 @@
       </p>
     </div>
   <% } else { %>
+  Welcome <%= user.name %>
   <div class = 'container'>
     <p>
+      <%if (user.avatar) {%>
+        <img src='data:image/jpg;base64,<%= user.avatar %>' width=120 height=120 alt="left" /><br>
+      <% } else {%>
+        <br/>
+        I can't see yer face...
+        <br/>
+      <% } %>
+      <form action="/profile_avatar" method="post" enctype = "multipart/form-data">
+        Upload a new avatar:
+          <input type='file' name='avatar' accept="image/*" />
+          <input type='submit' value="upload" />
+      </form>
       <a href = '/logout'>Logout</a>
     </p>
   </div>

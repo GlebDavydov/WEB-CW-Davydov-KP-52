@@ -75,14 +75,18 @@ router.get('/', (req, res, next)=>{
 		.find({})
 		.exec((err, posts)=>{
 			if(!err){
-				posts.forEach((post) => {
+				if(posts.length > 0){
+					posts.forEach((post) => {
 					users
 						.findOne({_id: post.user_id})
 						.exec((err, user)=>{
 							if(!err){
-								console.log("found an advert");
-								adverts[adverts.length] = {post : post, user : user};
-								//console.log(adverts);
+								if(user){
+									adverts[adverts.length] = {post : post, user : user};
+								} else {
+									console.log(err);
+									res.render('err', {status: 501, message: err});
+								}
 							} else {
 								console.log(err);
 								res.render('err', {status: 501, message: err});
@@ -92,7 +96,10 @@ router.get('/', (req, res, next)=>{
 							console.log(adverts);
 							res.render('index', {user: req.user, adverts: adverts});
 						});
-				});
+					});
+				} else {
+					res.render('index', {user: req.user, adverts: adverts});
+				}
 			} else {
 				console.log(err);
 				res.render('err', {status: 501, message: err});
@@ -123,8 +130,31 @@ router.post('/login',
     res.redirect('/profile');
 });
 
+router.post('/profile_avatar', (req, res)=>{
+			let avaObj = req.files.avatar;
+			let base64String = avaObj.data.toString('base64');
+
+			if (!base64String){ base64String=req.user.avatar; }
+
+			users
+			.findOneAndUpdate({_id : req.user._id},{
+						$set:{
+				      avatar : base64String
+						}},
+						{new : true})
+			.exec((err, data)=>{
+				if(!err){
+					console.log(base64String);
+					res.redirect('/profile');
+				} else {
+					res.render('error', {status: 501, message: err});
+				}
+			});
+
+});
+
 router.get('/login-error', (req, res) => {
-  res.render('error', {status : 501, message: "Login error"});
+  res.render('error', {status : 502, message: "Login error"});
 });
 
 router.get('/profile', (req, res) => {
