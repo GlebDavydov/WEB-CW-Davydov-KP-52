@@ -17,21 +17,21 @@
   <div class='container'>
     <h1>Registration</h1>
     <form action='/register' method='POST' enctype="multipart/form-data">
-      Login (email):
+      <label>Login (email):</label>
       <br/>
-      <input type='text' name='email' />
+      <input type='text' name='email' required="true"/>
       <br/>
       <label>Name (please enter real name):</label>
       <br/>
-      <input type='text' name='name' />
+      <input type='text' name='name' required="true"/>
       <br/>
       <label>Password:</label>
       <br/>
-      <input type='password' name='password' />
+      <input type='password' name='password' required="true"/>
       <br/>
       <label>Repeat password:</label>
       <br/>
-      <input type='password' name='password2' />
+      <input type='password' name='password2' required="true"/>
       <br/>
 
       <br /><br />

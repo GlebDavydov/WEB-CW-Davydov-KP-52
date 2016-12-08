@@ -33,7 +33,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-	console.log("deserializeUser id: " + id);
+	//console.log("deserializeUser id: " + id);
 	users.findOne({ _id: id}).exec((err, user) => {
     if(err){
       done(err, null);
@@ -49,13 +49,12 @@ passport.deserializeUser(function(id, done) {
 
 
 passport.use(new localStrategy((username, password, done) => {
-    console.log("name: " + username + " password: " + password);
-	  users.findOne({
+    users.findOne({
 			  email: username,
 			  password: userFuncs.HashMD5(password, config.salt)
 		  }).exec((err, user) => {
         if(!err){
-          console.log(user);
+          //console.log(user);
   				if (user) {
   					done(null, user);
   				} else {
@@ -85,15 +84,14 @@ router.get('/', (req, res, next)=>{
 									adverts[adverts.length] = {post : post, user : user};
 								} else {
 									console.log(err);
-									res.render('err', {status: 501, message: err});
+									res.render('err', {status: 500, message: err});
 								}
 							} else {
 								console.log(err);
-								res.render('err', {status: 501, message: err});
+								res.render('err', {status: 500, message: err});
 							}
 						})
 						.then(()=>{
-							console.log(adverts);
 							res.render('index', {user: req.user, adverts: adverts});
 						});
 					});
@@ -102,7 +100,7 @@ router.get('/', (req, res, next)=>{
 				}
 			} else {
 				console.log(err);
-				res.render('err', {status: 501, message: err});
+				res.render('err', {status: 500, message: err});
 			}
 		});
 });
@@ -110,11 +108,19 @@ router.get('/', (req, res, next)=>{
 
 
 router.get('/register', (req, res)=>{
-  res.render('register');
+	if(req.user){
+		res.render('error', {status: 403, message: "\'ready logged in"});
+	} else {
+  	res.render('register');
+	}
 });
 
 router.get('/login', (req, res)=>{
-  res.render('login');
+	if(req.user){
+		res.render('error', {status: 403, message: "\'ready logged in"});
+	} else {
+  	res.render('login');
+	}
 });
 
 router.post('/register', (req, res)=>{
@@ -125,9 +131,29 @@ router.post('/register', (req, res)=>{
 router.post('/login',
 	passport.authenticate('local', { failureRedirect: '/login-error' }),
   (req, res) => {
-		console.log('authenticated.');
-		console.log(req.body);
-    res.redirect('/profile');
+		res.redirect('/profile');
+});
+
+router.get('/user/:_id', (req, res)=>{
+	if(req.user){
+		if(req.user._id == req.params._id){
+			res.redirect('/profile');
+			return;
+		}
+	}
+	users
+		.findOne({_id : req.params._id})
+		.exec((err, user)=>{
+			if(!err){
+				if(!user){
+					res.render('error', {status: 404, message: "User not found."});
+				} else {
+					res.render('user', {aUser : user});
+				}
+			} else {
+				res.render('error', {status: 500, message: err});
+			}
+		});
 });
 
 router.post('/profile_avatar', (req, res)=>{
@@ -144,29 +170,129 @@ router.post('/profile_avatar', (req, res)=>{
 						{new : true})
 			.exec((err, data)=>{
 				if(!err){
-					console.log(base64String);
 					res.redirect('/profile');
 				} else {
-					res.render('error', {status: 501, message: err});
+					res.render('error', {status: 500, message: err});
 				}
 			});
-
 });
 
 router.get('/login-error', (req, res) => {
-  res.render('error', {status : 502, message: "Login error"});
+  res.render('error', {status : 458, message: "Login error"});
 });
 
 router.get('/profile', (req, res) => {
 	console.log(req.body);
 	if(req.user){
 		res.render('profile', {user : req.user});
-	} else {res.render('error', {status : 401, message: "Unauthorized"});}
+	} else {res.render('error', {status : 401, message: "Not logged in"});}
 });
 
 router.get('/logout', (req, res) => {
 	req.logout();
 	res.redirect('/');
+});
+
+router.get('/profile/settings', (req, res) => {
+	if(req.user){
+		res.render('profile_settings', {user: req.user});
+	} else {
+		res.render('error', {status: 401, message: "Not logged in"});
+	}
+});
+
+router.post('/profile/settings', (req, res) =>{
+	if(req.user){
+	users
+		.findOne({_id : req.user._id})
+		.exec((err, user)=>{
+			if(!err){
+				if(!user){
+					res.render('error', {status: 404, message: "User not found"});
+				} else {
+					if(!req.body.password){
+						res.render('error', {status : undefined, message : "Missing Password"});
+						return;
+					}else if(user.password != userFuncs.HashMD5(req.body.password, config.salt)){
+						//console.log(userFuncs.HashMD5(req.body.password), config.salt);
+						res.render('error', {status : undefined, message : "Wrong password"});
+						return;
+					} else{ if(req.body.newPassword || req.body.newPassword2){
+							if(!req.body.newPassword || !req.body.newPassword2){
+								res.render('error', {status : undefined, message : "Skipped new password"});
+								return;
+							} else if(req.body.newPassword != req.body.newPassword2){
+								res.render('error', {status : undefined, message : "New password mismmatch"});
+								return;
+							} else {
+								users
+								.findOneAndUpdate({_id : req.user._id}, {
+									$set:{
+										password : userFuncs.HashMD5(req.body.newPassword, config.salt)
+									}},
+								{new : true})
+								.exec((err, data) => {if(err){res.render('error', {status : 500, message: err});return;}});
+							}
+					}
+					if(req.body.email){
+						users
+						.findOne({email : req.body.email})
+						.exec((err, data)=>{
+							if(!err){
+							if(data){
+								res.render('error', {status: undefined, message: "This email is already used"});
+								return;
+							}else{
+								users
+									.findOneAndUpdate({_id : req.user._id}, {
+											$set:{
+												email : req.body.emai
+											}},
+											{new : true})
+									.exec((err, data) => {if(err){res.render('error', {status : 500, message: err});return;}});
+									}
+								} else {
+									res.render('error', {status: 500, message : err});
+								}
+							});
+					}
+					if(req.body.name){
+						users
+						.findOneAndUpdate({_id : req.user._id}, {
+							$set:{
+								name : req.body.name
+							}},
+						{new : true})
+						.exec((err, data) => {if(err){res.render('error', {status : 500, message: err});return;}});
+					}
+					if(req.body.descript){
+						users
+						.findOneAndUpdate({_id : req.user._id}, {
+							$set:{
+								brief : req.body.descript
+							}},
+						{new : true})
+						.exec((err, data) => {if(err){res.render('error', {status : 500, message: err});return;}});
+					}
+					if(req.body.place){
+						users
+						.findOneAndUpdate({_id : req.user._id}, {
+							$set:{
+								place: req.body.place
+							}},
+						{new : true})
+						.exec((err, data) => {if(err){res.render('error', {status : 500, message: err});return;}});
+					}
+					res.redirect('/profile');
+				}
+			}
+		}else {
+					res.render('error', {status: 500, message: err});
+				}
+		});
+	} else {
+		res.render('error', {status : 401, message: "Not logged in"});
+	}
 });
 
 module.exports = router;

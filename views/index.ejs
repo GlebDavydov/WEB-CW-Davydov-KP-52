@@ -14,7 +14,7 @@
 
 <body>
 
-  <script src="js/scripts.js"></script>
+<script src="js/scripts.js"></script>
 <p>
   <% if  (!user) { %>
   <br />
@@ -35,8 +35,9 @@
   <% if (adverts.length > 0) { %>
     <ul>
       <% adverts.forEach(function(advert) {%>
-        <br/><h4>Author:</h4>
-        <%= advert.user.name %>
+        <br/><b>Author:</b>
+        <br/>
+        <a href = "/user/<%= advert.user._id %>"><%= advert.user.name %></a>
         <br/>
         <%= advert.post.text %>
       <% }); %>
@@ -45,6 +46,7 @@
   <% } %>
   </div>
 
+  <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
 </p>
 </body>
 </html>

@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Time Bank</title>
+  <meta name="description" content="Time Bank">
+  <meta name="author" content="GDavydov">
+
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+
+</head>
+
+<body>
+  <% if (!aUser) { %>
+    <div class = 'container'>
+      <p>
+        404 Error: not found.
+        <br/>
+        <a href = '/'>Home</a>
+      </p>
+    </div>
+  <% } else { %>
+  <h4><%= aUser.name %><h4>
+  <div class = 'container'>
+    <p>
+      <%if (aUser.avatar) {%>
+        <img src='data:image/jpg;base64,<%= user.avatar %>' width=120 height=120 alt="left" /><br>
+      <% } %>
+      <br/>
+      <br/>
+      <a href = '/'>Home</a>
+    </p>
+  </div>
+  <% } %>
+  <script src="js/scripts.js"></script>
+
+
+</body>
+</html>

@@ -18,11 +18,15 @@
       <p>
         401 Forbidden: Not logged in.
         <br/>
-        <a href = '/index'>Home</a>
+        <a href = '/'>Home</a>
       </p>
     </div>
   <% } else { %>
   Welcome <%= user.name %>
+  <br/>
+  <%if (user.place) {%>
+    Place: <%= user.place%>
+  <% } %>
   <div class = 'container'>
     <p>
       <%if (user.avatar) {%>
@@ -32,12 +36,25 @@
         I can't see yer face...
         <br/>
       <% } %>
+
+      <% if (user.brief) {%>
+        <p>
+        <%= user.brief%>
+        </p>
+      <% } %>
+
       <form action="/profile_avatar" method="post" enctype = "multipart/form-data">
         Upload a new avatar:
           <input type='file' name='avatar' accept="image/*" />
+          <br/>
           <input type='submit' value="upload" />
       </form>
+      <br/>
+      <a href = '/profile/settings'>Profile settings</a>
+      <br/>
       <a href = '/logout'>Logout</a>
+      <br/>
+      <a href = '/'>Home</a>
     </p>
   </div>
   <% } %>
