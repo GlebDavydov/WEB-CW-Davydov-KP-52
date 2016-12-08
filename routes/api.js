@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userFuncs = require('../cook/user.cook.js');
-//const advertboard = require('../cook/post.cook.js');
+const postsFuncs = require('../cook/post.cook.js');
 const users = require('../dbcontrol/users.model.js');
 const posts = require('../dbcontrol/post.model.js');
 const bodyParser = require('body-parser');
@@ -72,35 +72,23 @@ router.get('/', (req, res, next)=>{
 	let adverts = [];
 	posts
 		.find({})
-		.exec((err, posts)=>{
+		.exec((err, theposts)=>{
 			if(!err){
 				if(posts.length > 0){
-					posts.forEach((post) => {
-					users
-						.findOne({_id: post.user_id})
-						.exec((err, user)=>{
-							if(!err){
-								if(user){
-									adverts[adverts.length] = {post : post, user : user};
-								} else {
-									console.log(err);
-									res.render('err', {status: 500, message: err});
-								}
-							} else {
-								console.log(err);
-								res.render('err', {status: 500, message: err});
-							}
-						})
-						.then(()=>{
-							res.render('index', {user: req.user, adverts: adverts});
-						});
+					postsFuncs.myFinder(theposts, adverts)
+					.then(()=>{
+					console.log(adverts);
+					res.render('index', {user: req.user, adverts: adverts});
+				})
+					.catch((err)=>{
+						res.render('error', {status : 500, message: err});//"Internal server error"});
 					});
 				} else {
 					res.render('index', {user: req.user, adverts: adverts});
 				}
 			} else {
 				console.log(err);
-				res.render('err', {status: 500, message: err});
+				res.render('error', {status: 500, message: err});
 			}
 		});
 });
@@ -182,9 +170,35 @@ router.get('/login-error', (req, res) => {
 });
 
 router.get('/profile', (req, res) => {
-	console.log(req.body);
+	//console.log(req.body);
 	if(req.user){
-		res.render('profile', {user : req.user});
+		let adverts = [];
+		posts
+			.find({user_id : req.user._id})
+			.exec((err, data) => {
+				if(!err){
+					data.forEach((post) => {
+						adverts[adverts.length] = {post: post, user: req.user};
+					});
+				} else {
+					res.render('error', {status : 500, message : "Internal server error"});
+				}
+			});
+		posts
+			.find({compl_id : req.user._id})
+			.exec((err, data) => {
+				if(!err){
+					data.forEach((post) => {
+						adverts[adverts.length] = {post: post, user: req.user};
+					});
+				} else {
+					res.render('error', {status : 500, message : "Internal server error"});
+				}
+			})
+			.then(()=>{
+				//console.log(adverts);
+				res.render('profile', {user : req.user, adverts: adverts});
+			});
 	} else {res.render('error', {status : 401, message: "Not logged in"});}
 });
 
@@ -292,6 +306,14 @@ router.post('/profile/settings', (req, res) =>{
 		});
 	} else {
 		res.render('error', {status : 401, message: "Not logged in"});
+	}
+});
+
+router.post('/post_start', (req, res) => {
+	if(!req.user){
+		res.render('error', {status: 401, message: "Not logged in"});
+	}else{
+		postsFuncs.startAPost(req, res);
 	}
 });
 

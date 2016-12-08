@@ -57,7 +57,38 @@
       <a href = '/'>Home</a>
     </p>
   </div>
+
+  <% if (adverts.length > 0) { %>
+    <div class = "posts">
+    <ul>
+        <% adverts.forEach(function(advert) {%>
+          <br/><b>Author:</b>
+          <br/>
+          <a href = "/user/<%= advert.user._id %>"><%=  advert.user.name%></a>
+          <br/>
+          <%= advert.post.text %>
+        <% }); %>
+      </ul>
+  <div>
   <% } %>
+
+  <div class = "creation">
+    <h4>Create an advert!</h4>
+    <form action="/post_start" method = "POST" enctype = "multipart/form-data">
+    <br/>
+    <label>Adv text</label>
+    <br/>
+    <textarea cols="80" rows="10" name="text"></textarea>
+    <br/>
+    <%#<label>Choose adv type</label>%>
+    <br/>
+    <input type = "submit" value = "Create"/>
+    </form>
+  </div>
+
+  <% } %>
+
+
   <script src="js/scripts.js"></script>
 
 

@@ -14,7 +14,8 @@ let postSchema = new Schema({
   },
   advType:{
     type: String,
-    required: true
+    required: true,
+    default: "iNeed"
   },
   text:{
     type: String,
@@ -24,6 +25,9 @@ let postSchema = new Schema({
     type: Boolean,
     required: true,
     default: false
+  },
+  compl_id:{
+    type: Schema.Types.ObjectId
   }
 },
 {
