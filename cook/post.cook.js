@@ -40,18 +40,15 @@ exports.myFinder = (theposts, adverts)=>{
           .exec((err, user)=>{
             if(!err){
               if(user){
-                console.log('step');
                 adverts[adverts.length] = {post : post, user : user};
               } else {
                 console.log(err);
                 rej(err);
-                //res.render('err', {status: 500, message: err});
-              }
+                }
             } else {
               console.log(err);
               rej(err);
-              //res.render('err', {status: 500, message: err});
-            }
+              }
           })
           .then(()=>{
             done();

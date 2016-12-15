@@ -25,10 +25,24 @@
   <h4><%= aUser.name %><h4>
   <div class = 'container'>
     <p>
-      <%if (aUser.avatar) {%>
-        <img src='data:image/jpg;base64,<%= user.avatar %>' width=120 height=120 alt="left" /><br>
+      <% if (aUser.avatar) { %>
+        <img src='data:image/jpg;base64,<%= aUser.avatar %>' width=120 height=120 alt="left" /><br>
       <% } %>
       <br/>
+      <% if (adverts) { %>
+        <% if (adverts.length > 0) { %>
+          <% adverts.forEach(function(advert) {%>
+            <p>
+            <br/><b>Author:</b>
+            <br/>
+            <a href = "/user/<%= advert.user._id %>"><%= advert.user.name %></a>
+            <br/>
+            <%= advert.post.text %>
+            <br/>
+            </p>
+          <% }); %>
+        <% } %>
+      <% } %>
       <br/>
       <a href = '/'>Home</a>
     </p>

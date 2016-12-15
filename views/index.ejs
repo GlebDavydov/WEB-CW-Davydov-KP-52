@@ -31,18 +31,24 @@
     <br/>
   <% } %>
 
+  <div class="filters">
+
+  </div>
+
   <div class = "container">
   <% if (adverts.length > 0) { %>
     <ul>
       <% adverts.forEach(function(advert) {%>
+        <p>
         <br/><b>Author:</b>
         <br/>
         <a href = "/user/<%= advert.user._id %>"><%= advert.user.name %></a>
         <br/>
         <%= advert.post.text %>
+        <br/>
+        </p>
       <% }); %>
     </ul>
-  <%#todo else href create advert%>
   <% } %>
   </div>
 

@@ -1,0 +1,66 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Time Bank</title>
+  <meta name="description" content="Time Bank">
+  <meta name="author" content="GDavydov">
+
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+
+</head>
+
+<body>
+  <% if (!user) { %>
+    <div class = 'container'>
+      <p>
+        401 Forbidden: Not logged in.
+        <br/>
+        <a href = '/'>Home</a>
+      </p>
+    </div>
+  <% } else { %>
+  Welcome <%= user.name %>
+  <div class = 'container'>
+    <p>
+      <form action="/profile/settings" method="POST" enctype = "multipart/form-data">
+      <label>Change email:</label>
+      <br/>
+      <input type='text' name='email' />
+      <br/>
+      <label>Change name (please enter real name):</label>
+      <br/>
+      <input type='text' name='name' />
+      <br/>
+      <label>Your password:</label>
+      <br/>
+      <input type='password' name='password' required="true"/>
+      <br/>
+      <label>New password:</label>
+      <br/>
+      <input type='password' name='newpassword' />
+      <br/>
+      <label>Repeat new password:</label>
+      <br/>
+      <input type='password' name='new password' />
+      <br/>
+      <label>About yourself:</label>
+      <br/>
+      <textarea rows="10" cols="80" name='descript' />
+      <br/>
+      <label>Edit place:</label>
+      <br/>
+      <input type="text" name = "place" />
+      <br/>
+      <input type = "submit" value="Sumbmit changes">
+    </form>
+    </p>
+  </div>
+  <% } %>
+  <script src="js/scripts.js"></script>
+
+
+</body>
+</html>

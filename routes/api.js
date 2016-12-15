@@ -11,7 +11,6 @@ const localStrategy = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
-
 const config = require('../locals.js');
 
 router.use(session({
@@ -77,11 +76,11 @@ router.get('/', (req, res, next)=>{
 				if(posts.length > 0){
 					postsFuncs.myFinder(theposts, adverts)
 					.then(()=>{
-					console.log(adverts);
-					res.render('index', {user: req.user, adverts: adverts});
-				})
+						console.log(adverts);
+						res.render('index', {user: req.user, adverts: adverts});
+					})
 					.catch((err)=>{
-						res.render('error', {status : 500, message: err});//"Internal server error"});
+						res.render('error', {status : 500, message: "Internal server error"});
 					});
 				} else {
 					res.render('index', {user: req.user, adverts: adverts});
@@ -129,6 +128,7 @@ router.get('/user/:_id', (req, res)=>{
 			return;
 		}
 	}
+	let adverts = [];
 	users
 		.findOne({_id : req.params._id})
 		.exec((err, user)=>{
@@ -136,7 +136,18 @@ router.get('/user/:_id', (req, res)=>{
 				if(!user){
 					res.render('error', {status: 404, message: "User not found."});
 				} else {
-					res.render('user', {aUser : user});
+					userFuncs.findAndFill(user._id, adverts)
+					.then(()=>{
+						res.render('user', {aUser : user, adverts: adverts});
+					})
+					.catch((err)=>{
+						console.log(err);
+						if(err == "No such user"){
+							res.render('error', {status: 404, message: err});
+						}else{
+							res.render('error', {status: 500, message: "Internal server error"});
+						}
+					});
 				}
 			} else {
 				res.render('error', {status: 500, message: err});
@@ -166,7 +177,7 @@ router.post('/profile_avatar', (req, res)=>{
 });
 
 router.get('/login-error', (req, res) => {
-  res.render('error', {status : 458, message: "Login error"});
+  res.render('error', {status : undefined, message: "Incorrect username/password"});
 });
 
 router.get('/profile', (req, res) => {
@@ -177,7 +188,7 @@ router.get('/profile', (req, res) => {
 			.find({user_id : req.user._id})
 			.exec((err, data) => {
 				if(!err){
-					data.forEach((post) => {
+					data.forEach((post, i, adverts) => {
 						adverts[adverts.length] = {post: post, user: req.user};
 					});
 				} else {

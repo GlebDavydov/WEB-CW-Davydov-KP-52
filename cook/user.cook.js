@@ -2,6 +2,8 @@ const Users = require('../dbcontrol/users.model.js');
 const crypto = require('crypto');
 const passport = require('passport');
 const config = require('../locals.js');
+const posts = require('../dbcontrol/post.model.js');
+const asyncForEach = require('async-foreach').forEach;
 
 exports.HashMD5 = function(password, salt){
     return crypto.createHash('md5').update(password + salt).digest("hex");
@@ -48,4 +50,50 @@ exports.registerNewUser = (req, res) => {
           });
         }
     });
+};
+
+exports.findAndFill = function(_id, adverts){
+  return new Promise((resv, rej)=>{
+    Users
+      .findOne({_id: _id})
+      .exec((err, user) => {
+        if(!err){
+          if(!user){
+            rej("No such user");
+          } else {
+            posts
+              .find({user_id : _id})
+              .exec((err, theposts)=>{
+                if(!err){
+                  if(theposts){
+                    theposts.forEach((post)=>{
+                      adverts[adverts.length] = {user: user, post: post};
+                    });
+                  }
+                }else{
+                  rej(err);
+                }
+              })
+              .then(()=>{
+                posts
+                  .find({compl_id: _id})
+                  .exec((err, theposts)=>{
+                    if(!err){
+                      if(theposts){
+                          theposts.forEach((post)=>{
+                            adverts[adverts.length] = {user: user, post: post};
+                          });
+                      }
+                    }else{
+                      rej(err);
+                    }
+                  })
+                  .then(()=>{resv();});
+              });
+          }
+        } else {
+          rej(err);
+        }
+      });
+  });
 };
