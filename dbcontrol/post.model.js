@@ -28,7 +28,11 @@ let postSchema = new Schema({
   },
   compl_id:{
     type: Schema.Types.ObjectId
-  }
+  },
+  pos_compl_ids:[
+    {pos_compl_id:{
+    type:Schema.Types.ObjectId
+  }}]
 },
 {
   collection : 'posts'

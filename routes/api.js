@@ -11,6 +11,7 @@ const localStrategy = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
+
 const config = require('../locals.js');
 
 router.use(session({
@@ -18,7 +19,6 @@ router.use(session({
 	resave: false,
 	saveUninitialized: true
 }));
-
 
 router.use(passport.initialize());
 router.use(passport.session());
@@ -76,7 +76,7 @@ router.get('/', (req, res, next)=>{
 				if(posts.length > 0){
 					postsFuncs.myFinder(theposts, adverts)
 					.then(()=>{
-						console.log(adverts);
+						//console.log(adverts);
 						res.render('index', {user: req.user, adverts: adverts});
 					})
 					.catch((err)=>{
@@ -104,7 +104,7 @@ router.get('/register', (req, res)=>{
 
 router.get('/login', (req, res)=>{
 	if(req.user){
-		res.render('error', {status: 403, message: "\'ready logged in"});
+		res.redirect('/'); //.render('error', {status: 403, message: "\'ready logged in"});
 	} else {
   	res.render('login');
 	}
@@ -183,33 +183,27 @@ router.get('/login-error', (req, res) => {
 router.get('/profile', (req, res) => {
 	//console.log(req.body);
 	if(req.user){
+		users
+			.find({_id: req.user._id})
+			.exec((err, user)=>{
+			if(!err){
+				if(user){
 		let adverts = [];
-		posts
-			.find({user_id : req.user._id})
-			.exec((err, data) => {
-				if(!err){
-					data.forEach((post, i, adverts) => {
-						adverts[adverts.length] = {post: post, user: req.user};
-					});
-				} else {
-					res.render('error', {status : 500, message : "Internal server error"});
-				}
-			});
-		posts
-			.find({compl_id : req.user._id})
-			.exec((err, data) => {
-				if(!err){
-					data.forEach((post) => {
-						adverts[adverts.length] = {post: post, user: req.user};
-					});
-				} else {
-					res.render('error', {status : 500, message : "Internal server error"});
-				}
-			})
+		userFuncs.findAndFill(req.user._id, adverts)
 			.then(()=>{
-				//console.log(adverts);
+				console.log(adverts);
 				res.render('profile', {user : req.user, adverts: adverts});
+			})
+			.catch((err)=>{
+				res.render('error', {status: 500, message: err});
 			});
+		}else{
+			res.render('error', {status: 404, message: "User not found"});
+		}
+		}else{
+			res.render('error', {status: 500, message: "Internal server error"});
+		}
+		});
 	} else {res.render('error', {status : 401, message: "Not logged in"});}
 });
 
@@ -325,6 +319,31 @@ router.post('/post_start', (req, res) => {
 		res.render('error', {status: 401, message: "Not logged in"});
 	}else{
 		postsFuncs.startAPost(req, res);
+	}
+});
+
+router.post('/compl_id', (req, res)=>{
+	if(!req.user){
+		res.render('error', {status: 401, message: "Not logged in"});
+	} else {
+		if(req.body.adv_id){
+			posts
+				.findOneAndUpdate({_id: req.body.adv_id},{
+					$push:{
+						pos_compl_ids: {pos_compl_id: req.user.id}
+				}})
+				.exec((err, data)=>{
+					if(err){
+						res.render("error", {status: 500, message: "Internal server error"});
+					} else{
+						if(!data){
+							res.render("error", {status: 404, message: "Advert not found"});
+						} else {
+							res.redirect(req.headers.referer);
+						}
+					}
+				});
+		}
 	}
 });
 
