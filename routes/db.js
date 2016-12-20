@@ -42,3 +42,7 @@ db.get('/posts/:_id', (req, res)=>{
       }
     });
 });
+
+db.get('/posts/filter', (req, res)=>{});
+
+module.exports = db;
