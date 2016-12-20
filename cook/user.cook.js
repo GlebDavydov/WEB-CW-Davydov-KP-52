@@ -67,7 +67,7 @@ exports.findAndFill = function(_id, adverts){
                 if(!err){
                   if(theposts){
                     theposts.forEach((post)=>{
-                      adverts[adverts.length] = {user: user, post: post};
+                      adverts[adverts.length] = {user: {name: user.name, _id: user.id}, post: post};
                     });
                   }
                 }else{
@@ -81,7 +81,7 @@ exports.findAndFill = function(_id, adverts){
                     if(!err){
                       if(theposts){
                           theposts.forEach((post)=>{
-                            adverts[adverts.length] = {user: user, post: post};
+                            adverts[adverts.length] = {user: {name: user.name, _id: user.id}, post: post};
                           });
                       }
                     }else{

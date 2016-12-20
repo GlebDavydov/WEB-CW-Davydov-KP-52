@@ -43,7 +43,7 @@ exports.myFinder = (theposts, adverts)=>{
           .exec((err, user)=>{
             if(!err){
               if(user){
-                adverts[adverts.length] = {post : post, user : user};
+                adverts[adverts.length] = {post : post, user: {name: user.name, _id: user.id}};
               } else {
                 console.log(err);
                 rej(err);

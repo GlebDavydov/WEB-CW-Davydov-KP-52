@@ -379,4 +379,8 @@ router.get('/advert_delete/:_id', (req, res)=>{
 		 });
 });
 
+const db = require("./db.js");
+
+router.use('/db', db);
+
 module.exports = router;
