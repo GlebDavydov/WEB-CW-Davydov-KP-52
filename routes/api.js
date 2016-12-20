@@ -330,7 +330,7 @@ router.post('/compl_id', (req, res)=>{
 			posts
 				.findOneAndUpdate({_id: req.body.adv_id},{
 					$push:{
-						pos_compl_ids: {pos_compl_id: req.user.id}
+						pos_compl_ids: req.user.id
 				}})
 				.exec((err, data)=>{
 					if(err){
@@ -345,6 +345,38 @@ router.post('/compl_id', (req, res)=>{
 				});
 		}
 	}
+});
+
+router.get('/advert_delete/:_id', (req, res)=>{
+		posts
+		 .findOne({_id: req.params._id})
+		 .exec((err, post)=>{
+			 if(!err){
+				 if(post){
+					 if(req.user){
+						if(req.user._id.toString() == post.user_id.toString()){
+							 	posts
+									.remove({_id: req.params._id})
+									.exec((err, data)=>{
+										if(!err){
+											res.redirect("/profile");
+										} else {
+											res.render('error', {status: 500, message: "Internal server error"});
+										}
+									});
+						 } else {
+							 res.render("error", {status : 403, message: "Unauthorized"});
+						 }
+					 } else {
+						 res.render("error", {status : 403, message: "Unauthorized"});
+					 }
+				 }else{
+					 res.render('error', {status: 404, message: "Advert not found"});
+				 }
+			 } else {
+				 res.render('error', {status: 500, message: "Internal server error"});
+			 }
+		 });
 });
 
 module.exports = router;

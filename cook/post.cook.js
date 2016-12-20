@@ -11,10 +11,13 @@ exports.startAPost = function(req, res){
       } else {
         if(!req.body.text){
           res.render('error', {status : undefined, message: "Empty advertisment text"});
+        } else if(!req.body.advtype || (req.body.advtype != "iNeed" && req.body.advtype != "iHelp")){
+          res.render('error', {status : undefined, message: "Wrong advertisment type"});
         } else {
           let data = {
             user_id : req.user._id,
-            text: req.body.text
+            text: req.body.text,
+            advType: req.body.advType
           };
           let post = new posts(data);
             post.save((err, data)=>{

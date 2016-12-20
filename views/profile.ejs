@@ -66,6 +66,9 @@
           <br/>
           <a href = "/user/<%= advert.user._id %>"><%=  advert.user.name%></a>
           <br/>
+          <% if (advert.post.advType == "iNeed") {%>
+          <a href = "/advert_delete/<%= advert.post.id%>">Delete advert</a>
+          <% } %>
           <%= advert.post.text %>
         <% }); %>
       </ul>
