@@ -121,39 +121,7 @@ router.post('/login',
 		res.redirect('/profile');
 });
 
-router.get('/user/:_id', (req, res)=>{
-	if(req.user){
-		if(req.user._id == req.params._id){
-			res.redirect('/profile');
-			return;
-		}
-	}
-	let adverts = [];
-	users
-		.findOne({_id : req.params._id})
-		.exec((err, user)=>{
-			if(!err){
-				if(!user){
-					res.render('error', {status: 404, message: "User not found."});
-				} else {
-					userFuncs.findAndFill(user._id, adverts)
-					.then(()=>{
-						res.render('user', {aUser : user, adverts: adverts});
-					})
-					.catch((err)=>{
-						console.log(err);
-						if(err == "No such user"){
-							res.render('error', {status: 404, message: err});
-						}else{
-							res.render('error', {status: 500, message: "Internal server error"});
-						}
-					});
-				}
-			} else {
-				res.render('error', {status: 500, message: err});
-			}
-		});
-});
+
 
 router.post('/profile_avatar', (req, res)=>{
 			let avaObj = req.files.avatar;
@@ -314,13 +282,7 @@ router.post('/profile/settings', (req, res) =>{
 	}
 });
 
-router.post('/post_start', (req, res) => {
-	if(!req.user){
-		res.render('error', {status: 401, message: "Not logged in"});
-	}else{
-		postsFuncs.startAPost(req, res);
-	}
-});
+
 
 router.post('/compl_id', (req, res)=>{
 	if(!req.user){
@@ -347,40 +309,13 @@ router.post('/compl_id', (req, res)=>{
 	}
 });
 
-router.get('/advert_delete/:_id', (req, res)=>{
-		posts
-		 .findOne({_id: req.params._id})
-		 .exec((err, post)=>{
-			 if(!err){
-				 if(post){
-					 if(req.user){
-						if(req.user._id.toString() == post.user_id.toString()){
-							 	posts
-									.remove({_id: req.params._id})
-									.exec((err, data)=>{
-										if(!err){
-											res.redirect("/profile");
-										} else {
-											res.render('error', {status: 500, message: "Internal server error"});
-										}
-									});
-						 } else {
-							 res.render("error", {status : 403, message: "Unauthorized"});
-						 }
-					 } else {
-						 res.render("error", {status : 403, message: "Unauthorized"});
-					 }
-				 }else{
-					 res.render('error', {status: 404, message: "Advert not found"});
-				 }
-			 } else {
-				 res.render('error', {status: 500, message: "Internal server error"});
-			 }
-		 });
-});
 
-const db = require("./db.js");
+const apdb = require("./apdb.js");
+const appost = require("./appost.js");
+const apuser = require("./apuser.js");
 
-router.use('/db', db);
+router.use('/db', apdb);
+router.use('/post', appost);
+router.use('/user', apuser);
 
 module.exports = router;

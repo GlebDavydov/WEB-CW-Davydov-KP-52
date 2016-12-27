@@ -9,6 +9,7 @@
   <meta name="author" content="GDavydov">
 
   <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 
 </head>
 
@@ -67,17 +68,19 @@
           <a href = "/user/<%= advert.user._id %>"><%=  advert.user.name%></a>
           <br/>
           <% if (advert.post.advType == "iNeed") {%>
-          <a href = "/advert_delete/<%= advert.post.id%>">Delete advert</a>
+          <a href = "/db/post/delete/<%= advert.post.id%>">Delete advert</a>
+          <div class = "stuff">
+
           <% } %>
           <%= advert.post.text %>
         <% }); %>
       </ul>
-  <div>
+    </div>
   <% } %>
 
   <div class = "creation">
     <h4>Create an advert!</h4>
-    <form action="/post_start" method = "POST" enctype = "multipart/form-data">
+    <form action="/db/post/start" method = "POST" enctype = "multipart/form-data">
     <br/>
     <label>Adv text</label>
     <br/>

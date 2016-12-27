@@ -40,7 +40,7 @@
             <%= advert.post.text %>
             <br/>
             <% if (user) {%>
-            <% if (advert.post.advType == "iNeed" {) %>
+            <% if (advert.post.advType == "iNeed" ) {%>
             <form action="/compl_id" method = "POST" enctype="multipart/form-data">
             <br/>
             <input type = "hidden" name = "adv_id" value = "<%= advert.post._id%>" />
