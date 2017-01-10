@@ -290,25 +290,57 @@ router.post('/compl_id', (req, res)=>{
 	} else {
 		if(req.body.adv_id){
 			posts
-				.findOneAndUpdate({_id: req.body.adv_id},{
-					$push:{
-						pos_compl_ids: req.user.id
-				}})
-				.exec((err, data)=>{
-					if(err){
-						res.render("error", {status: 500, message: "Internal server error"});
-					} else{
-						if(!data){
+				.findOne({_id: req.body.adv_id})
+				.exec((err, adv) => {
+					if(!err){
+						if(adv){
+							if(adv.user_id.toString() == req.user._id.toString()){
+								console.log(req.user._id +  "\tAttempted to contribute to own task");
+								res.redirect(req.headers.referer);
+							}else if(adv.pos_compl_ids && myContains(adv.pos_compl_ids, req.user_id)){
+								console.log(adv._id + " contains " + req.user._id);
+								res.redirect(req.headers.referer);
+							} else {
+							console.log(adv.user_id);
+							console.log(req.user._id);
+							posts
+							.findOneAndUpdate({_id: adv._id},{
+								$push:{
+									pos_compl_ids: req.user.id
+								}})
+							.exec((err, data)=>{
+								if(err){
+									res.render("error", {status: 500, message: "Internal server error"});
+								} else{
+									if(!data){
+										res.render("error", {status: 404, message: "Advert not found"});
+									} else {
+										res.redirect(req.headers.referer);
+									}
+								}
+							});
+							}
+						}else{
 							res.render("error", {status: 404, message: "Advert not found"});
-						} else {
-							res.redirect(req.headers.referer);
 						}
-					}
-				});
+					} else{
+						res.render("error", {status: 500, message: "Internal server error"});
+				}
+			});
 		}
 	}
 });
 
+
+function myContains (Arr, Obj){
+	Arr.forEach((arrElem)=>{
+		if(arrElem.toString() == Obj.toSting()){
+			return true;
+		} else {
+			return false;
+		}
+	});
+}
 
 const apdb = require("./apdb.js");
 const appost = require("./appost.js");

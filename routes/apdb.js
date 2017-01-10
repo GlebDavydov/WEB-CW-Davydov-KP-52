@@ -7,17 +7,21 @@ const posts = require('../dbcontrol/post.model.js');
 const bodyParser = require('body-parser');
 const busboyBodyParser = require('busboy-body-parser');
 const cookieParser = require('cookie-parser');
-
+/*const ejs = require('ejs');*/
 
 const config = require('../locals.js');
 
 apdb.get('/user/:_id', (req, res)=>{
   users
-    .find({_id: req.params.id})
+    .findOne({_id: req.params._id})
     .exec((err, user)=>{
       if(!err){
         if(user){
-          res.json({name:user.name, _id:user._id});
+          if(user.avatar){
+            res.render("update/user", {user: {name: user.name, _id: user._id, avatar: user.avatar}});
+          } else {
+            res.render("update/user", {user: {name: user.name, _id: user._id}});
+          }
         }else{
           res.render("error", {status: 404, message: "User not found"});
         }
