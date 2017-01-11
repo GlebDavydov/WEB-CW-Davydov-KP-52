@@ -69,25 +69,31 @@
           <a href = "/user/<%= advert.user._id %>"><%=  advert.user.name%></a>
           <br/>
           <% if (advert.post.advType == "iNeed") {%>
-          <a href = "/db/post/delete/<%= advert.post.id%>">Delete advert</a>
-          <div class = "stuff">
-
-          <% } %>
-          <%= advert.post.text %>
-          <% if (advert.post.pos_compl_ids) { %>
-            <% if (advert.post.pos_compl_ids.length > 0) { %>
-              <p><b>Contributors:</b></p>
-              <% advert.post.pos_compl_ids.forEach(function(pcid) { %>
-                <div class="splash"></div>
-                <script type ="text/javascript">
-                $.ajax({
-                  url : "/db/user/<%= pcid %>"
-                })
-                .done(function(data){
-                  $(".splash").replaceWith("<div class=\"newSplash\">"+data+"</div>");
-                });
-                </script>
-              <% }); %>
+            <a href = "/db/post/delete/<%= advert.post._id%>">Delete advert</a>
+            <div class = "stuff">
+            <%= advert.post.text %>
+            <% if (advert.post.pos_compl_ids) { %>
+              <% if (advert.post.pos_compl_ids.length > 0) { %>
+                <p><b>Contributors:</b></p>
+                <% advert.post.pos_compl_ids.forEach(function(pcid) { %>
+                  <div class="splash"></div>
+                  <script type ="text/javascript">
+                  $.ajax({
+                    url : "/db/user/<%= pcid %>"
+                  })
+                  .done(function(data){
+                    $(".splash").replaceWith("<div class=\"newSplash\">"+data+"</div>");
+                  });
+                  </script>
+                  <form action="/post/compl_remove" method="POST">
+                    <input type="hidden" name="post_id" value="<%= advert.post._id%>" />
+                    <input type="hidden" name="user_id" value="<%= pcid %>" />
+                    <input type="submit" value="remove contributor" />
+                  </form>
+                  <br/>
+                  <a href="/post/compl_accept/<%= pcid %>">accept contribution</a>
+                <% }); %>
+              <% } %>
             <% } %>
           <% } %>
         <% }); %>
@@ -105,8 +111,11 @@
     <br/>
     <label>Choose adv type</label>
     <br/>
-    <p><input type = "radio" value = "iNeed" name = "advtype" required="true">I need help</p>
-    <p><input type = "radio" value = "iHelp" name = "advtype" required="true">I can help</p><br/>
+    <p><input type = "radio" value = "iNeed" name = "advtype" required="true" />I need help</p>
+    <p><input type = "radio" value = "iHelp" name = "advtype" required="true" />I can help</p><br/>
+    <br/>
+    Input minimal number of hours to be paid for this job:
+    <input type = "number" required="true" name = "vage" step="0.01"/>
     <br/>
     <input type = "submit" value = "Create"/>
     </form>

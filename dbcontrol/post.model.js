@@ -31,6 +31,12 @@ let postSchema = new Schema({
   },
   pos_compl_ids:{
     type: [Schema.Types.ObjectId]
+  },
+  comments:{
+    type: [Schema.Types.ObjectId]
+  },
+  minVage:{
+    type: Number
   }
 },
 {

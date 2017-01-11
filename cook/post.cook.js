@@ -14,10 +14,15 @@ exports.startAPost = function(req, res){
         } else if(!req.body.advtype || (req.body.advtype != "iNeed" && req.body.advtype != "iHelp")){
           res.render('error', {status : undefined, message: "Wrong advertisment type"});
         } else {
+          let minVage = 0;
+          if(req.body.vage){
+            minVage = req.body.vage;
+          }
           let data = {
             user_id : req.user._id,
             text: req.body.text,
-            advType: req.body.advType
+            advType: req.body.advType,
+            minVage: minVage
           };
           let post = new posts(data);
             post.save((err, data)=>{

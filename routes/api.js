@@ -297,22 +297,24 @@ router.post('/compl_id', (req, res)=>{
 							if(adv.user_id.toString() == req.user._id.toString()){
 								console.log(req.user._id +  "\tAttempted to contribute to own task");
 								res.redirect(req.headers.referer);
-							}else if(adv.pos_compl_ids && myContains(adv.pos_compl_ids, req.user_id)){
-								console.log(adv._id + " contains " + req.user._id);
-								res.redirect(req.headers.referer);
-							} else {
-							console.log(adv.user_id);
-							console.log(req.user._id);
-							posts
-							.findOneAndUpdate({_id: adv._id},{
-								$push:{
-									pos_compl_ids: req.user.id
-								}})
-							.exec((err, data)=>{
-								if(err){
-									res.render("error", {status: 500, message: "Internal server error"});
-								} else{
-									if(!data){
+								return;
+							}else{
+								myContains(adv.pos_compl_ids, req.user._id).then((data)=>{
+									if(data === true){
+										console.log(adv._id + " contains " + req.user._id);
+										res.redirect(req.headers.referer);
+										return;
+								} else {
+									posts
+										.findOneAndUpdate({_id: adv._id},{
+										$push:{
+											pos_compl_ids: req.user.id
+										}})
+										.exec((err, data)=>{
+											if(err){
+												res.render("error", {status: 500, message: "Internal server error"});
+											} else{
+												if(!data){
 										res.render("error", {status: 404, message: "Advert not found"});
 									} else {
 										res.redirect(req.headers.referer);
@@ -320,11 +322,13 @@ router.post('/compl_id', (req, res)=>{
 								}
 							});
 							}
-						}else{
-							res.render("error", {status: 404, message: "Advert not found"});
-						}
-					} else{
-						res.render("error", {status: 500, message: "Internal server error"});
+						});
+					}
+					}else{
+						res.render("error", {status: 404, message: "Advert not found"});
+					}
+				} else{
+					res.render("error", {status: 500, message: "Internal server error"});
 				}
 			});
 		}
@@ -333,12 +337,18 @@ router.post('/compl_id', (req, res)=>{
 
 
 function myContains (Arr, Obj){
-	Arr.forEach((arrElem)=>{
-		if(arrElem.toString() == Obj.toSting()){
-			return true;
-		} else {
-			return false;
+	return new Promise((resv, rej)=>{
+	if(!Arr || !Obj){
+		resv(false);
+	}
+	Arr.forEach(function(arrElem){
+		if(arrElem !== undefined){
+			if(arrElem.toString() == Obj.toString()){
+				resv(true);
+			}
 		}
+	});
+	resv(false);
 	});
 }
 
