@@ -298,8 +298,12 @@ router.post('/compl_id', (req, res)=>{
 								console.log(req.user._id +  "\tAttempted to contribute to own task");
 								res.redirect(req.headers.referer);
 								return;
+							}else if (adv.isComplete){
+								console.log(req.user._id + "\tAttempted to contribute to complete task");
+								res.redirect(req.headers.referer);
+								return;
 							}else{
-								myContains(adv.pos_compl_ids, req.user._id).then((data)=>{
+								postsFuncs.myContains(adv.pos_compl_ids, req.user._id).then((data)=>{
 									if(data === true){
 										console.log(adv._id + " contains " + req.user._id);
 										res.redirect(req.headers.referer);
@@ -336,28 +340,16 @@ router.post('/compl_id', (req, res)=>{
 });
 
 
-function myContains (Arr, Obj){
-	return new Promise((resv, rej)=>{
-	if(!Arr || !Obj){
-		resv(false);
-	}
-	Arr.forEach(function(arrElem){
-		if(arrElem !== undefined){
-			if(arrElem.toString() == Obj.toString()){
-				resv(true);
-			}
-		}
-	});
-	resv(false);
-	});
-}
+
 
 const apdb = require("./apdb.js");
 const appost = require("./appost.js");
 const apuser = require("./apuser.js");
+/*const apcomment = require("./apcomment.js");*/
 
 router.use('/db', apdb);
 router.use('/post', appost);
 router.use('/user', apuser);
+/*router.use('/comment', apcomment);*/
 
 module.exports = router;

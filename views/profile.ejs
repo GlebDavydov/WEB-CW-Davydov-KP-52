@@ -43,7 +43,7 @@
         <p>
         <%= user.brief%>
         </p>
-      <% } %>
+      <% } %><div class="balance"><p align="right"><strong>BALANCE: <%= user.balance %></strong></p></div>
 
       <form action="/profile_avatar" method="post" enctype = "multipart/form-data">
         Upload a new avatar:
@@ -91,11 +91,28 @@
                     <input type="submit" value="remove contributor" />
                   </form>
                   <br/>
-                  <a href="/post/compl_accept/<%= pcid %>">accept contribution</a>
+                  <form action="/post/compl_accept" method="POST">
+                    <input type="hidden" name="post_id" value="<%= advert.post._id%>" />
+                    <input type="hidden" name="user_id" value="<%= pcid %>" />
+                    <p>adjust the money paid for this job</p>
+                    <input type="number" name="money_sent" step="0.01" min="<%= advert.post.minVage %>" max="<%= user.balance %>" required="true"/>
+                    <input type="submit" value="accept contribution" />
+                  </form>
                 <% }); %>
               <% } %>
             <% } %>
           <% } %>
+          <div class="toReplace2"><button class="listComments">Show comments</buton></div>
+          <script type="text/javascript">
+          $("listComments").onClick(function(){
+            $.ajax({
+              url : "/comment/list"
+            })
+            .done(function(data){
+              $(".toReplace2").replaceWith("<div class=\"replacer2\">"+data+"</div>");
+            });
+          });
+          </script>
         <% }); %>
       </ul>
     </div>

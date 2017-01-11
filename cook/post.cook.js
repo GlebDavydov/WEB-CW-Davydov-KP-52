@@ -68,3 +68,19 @@ exports.myFinder = (theposts, adverts)=>{
       });
     });
 };
+
+exports.myContains = function(Arr, Obj){
+	return new Promise((resv, rej)=>{
+	if(!Arr || !Obj){
+		resv(false);
+	}
+	Arr.forEach(function(arrElem){
+		if(arrElem !== undefined){
+			if(arrElem.toString() == Obj.toString()){
+				resv(true);
+			}
+		}
+	});
+	resv(false);
+	});
+}
